@@ -1,13 +1,16 @@
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamPanel;
-import com.github.sarxos.webcam.WebcamResolution;
 import gui.AppWindow;
+import gui.MainMenu;
+import util.ImageManager;
 import webcam.MyWebcam;
 
 public class Main {
 
     public static void main(String[] args) {
-        MyWebcam myWebcam = new MyWebcam();
-        AppWindow appWindow = new AppWindow(myWebcam.getWebcamPanel());
+        AppWindow appWindow = new AppWindow();
+        MyWebcam myWebcam = new MyWebcam(appWindow);
+        MainMenu mainMenu = new MainMenu(appWindow);
+        myWebcam.init(mainMenu);
+        mainMenu.init(myWebcam);
+        appWindow.draw(mainMenu);
     }
 }
