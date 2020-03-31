@@ -1,16 +1,17 @@
 import gui.AppWindow;
-import gui.MainMenu;
-import util.ImageManager;
-import webcam.MyWebcam;
+import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        AppWindow appWindow = new AppWindow();
-        MyWebcam myWebcam = new MyWebcam(appWindow);
-        MainMenu mainMenu = new MainMenu(appWindow);
-        myWebcam.init(mainMenu);
-        mainMenu.init(myWebcam);
-        appWindow.draw(mainMenu);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new AppWindow();
+            }
+        });
+
+
     }
 }
