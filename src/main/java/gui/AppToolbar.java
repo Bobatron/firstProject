@@ -17,11 +17,13 @@ public class AppToolbar extends JToolBar implements ActionListener {
     public AppToolbar(){
         super();
         setLayout(new FlowLayout(FlowLayout.LEFT));
+        setFloatable(false);
         cameraButton = new JButton("IMAGE CAPTURE");
         audioButton = new JButton("AUDIO CAPTURE");
         textButton = new JButton("TEXT CAPTURE");
         cameraButton.addActionListener(this);
         audioButton.addActionListener(this);
+        textButton.addActionListener(this);
         add(cameraButton);
         add(audioButton);
         add(textButton);

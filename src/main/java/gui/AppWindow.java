@@ -19,9 +19,9 @@ public class AppWindow extends JFrame {
 
     public AppWindow() {
         super("RetroTalker");
-        this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setVisible(true);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
         setLayout(new BorderLayout());
         add(mainMenuToolBar, BorderLayout.NORTH);
         mainMenuToolBar.setButtonListener(getButtonListener());
@@ -62,7 +62,7 @@ public class AppWindow extends JFrame {
             initCameraPanel();
             newPanel = cameraPanel;
         } else {
-            if(cameraPanel != null && cameraPanel.getWebcam().open()){
+            if(cameraPanel != null && cameraPanel.getWebcam().isOpen()){
                 WebcamUtil.closeWebcam();
             }
         }

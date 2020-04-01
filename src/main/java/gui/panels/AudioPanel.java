@@ -1,7 +1,8 @@
 package gui.panels;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import util.PlayAudioUtil;
+import util.RecordAudioUtil;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,50 +11,81 @@ import java.io.File;
 
 public class AudioPanel extends JPanel {
 
-    final String AUDIO_LOCATION = "src/main/resources/audio/";
-    File audioFolder = new File(AUDIO_LOCATION);
+    public static final String AUDIO_LOCATION = "src/main/resources/audio/";
+
     JList jList;
+    File audioFolder = new File(AUDIO_LOCATION);
     JButton recordButton = new JButton("RECORD");
     JButton playButton = new JButton("PLAY");
+    File[] audioFiles = audioFolder.listFiles();
+    JToolBar audioToolbar = new JToolBar();
+    JButton refreshButton = new JButton("REFRESH");
+    JButton deleteButton = new JButton("DELETE");
 
     public AudioPanel(){
         super();
         setLayout(new BorderLayout());
-        JPanel subPabel = new JPanel();
-        subPabel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        audioToolbar.setLayout(new FlowLayout(FlowLayout.LEFT));
+        audioToolbar.setFloatable(false);
 
+        playButton.addActionListener(audioButtonAction());
+        refreshButton.addActionListener(refreshButtonAction());
+        recordButton.addActionListener(recordButtonAction());
+        deleteButton.addActionListener(deleteButtonAction());
+        audioToolbar.add(recordButton);
+        audioToolbar.add(playButton);
+        audioToolbar.add(refreshButton);
+        audioToolbar.add(deleteButton);
 
-        playButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if(jList.getSelectedValue() != null) {
-                    String selectedFile = jList.getSelectedValue().toString();
-                    System.out.println(jList.getSelectedValue().toString());
-                    try
-                    {
-                        Clip clip = AudioSystem.getClip();
-                        clip.open(AudioSystem.getAudioInputStream(new File(AUDIO_LOCATION+selectedFile)));
-                        clip.start();
-                    }
-                    catch (Exception exc)
-                    {
-                        exc.printStackTrace(System.out);
-                    }
-                }
-            }
-        });
-        subPabel.add(recordButton);
-        subPabel.add(playButton);
-
-        File[] fileNames = audioFolder.listFiles();
-        String[] files = new String[fileNames.length];
-        for (int i = 0; i < fileNames.length; i++) {
-            files[i] = fileNames[i].getName();
-        }
-        jList = new JList(files);
+        jList = new JList(getAudioFileNames(audioFiles));
         jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         add(jList, BorderLayout.WEST);
-        add(subPabel, BorderLayout.SOUTH);
+        add(audioToolbar, BorderLayout.SOUTH);
+    }
+
+    private ActionListener deleteButtonAction() {
+        return actionEvent -> {
+            if (jList.getSelectedValue() != null) {
+                File selectedFile = new File(AUDIO_LOCATION + jList.getSelectedValue().toString());
+                selectedFile.delete();
+            }
+        };
+    }
+
+    ActionListener recordButtonAction() {
+        return actionEvent -> {
+            RecordAudioUtil.recordAudio();
+        };
+    }
+
+    public String[] getAudioFileNames(File[] files){
+        String[] fileNames = new String[files.length];
+        for(int i = 0; i < files.length; i++){
+            fileNames[i]  = files[i].getName();
+        }
+        return fileNames;
+    }
+
+    ActionListener audioButtonAction() {
+        return actionEvent -> {
+            if (jList.getSelectedValue() != null) {
+                PlayAudioUtil.playAudio(AUDIO_LOCATION + jList.getSelectedValue().toString());
+            }
+        };
+    }
+
+    ActionListener refreshButtonAction() {
+        return actionEvent -> {
+            remove(jList);
+            audioFiles = audioFolder.listFiles();
+            jList = new JList(getAudioFileNames(audioFiles));
+            add(jList, BorderLayout.WEST);
+            audioToolbar.repaint();
+            audioToolbar.revalidate();
+            repaint();
+            revalidate();
+        };
     }
 
 }

@@ -1,29 +1,31 @@
-package audio;
+package util;
 
 import javax.sound.sampled.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
-/**
- * A sample program is to demonstrate how to record sound in Java
- * author: www.codejava.net
- */
-public class JavaSoundRecorder {
+import static gui.panels.AudioPanel.AUDIO_LOCATION;
+
+public class RecordAudioUtil {
     // record duration, in milliseconds
-    static final long RECORD_TIME = 3000;  // 1 minute
+    static final long RECORD_TIME = 3000;
 
     // path of the wav file
-    File wavFile = new File("src/main/resources/audio/RecordAudio1.wav");
+    public static File getFileName(){
+        Long timestamp = System.nanoTime();
+        return new File(AUDIO_LOCATION+"RecordAudio"+timestamp+".wav");
+    }
 
     // format of audio file
-    AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
+    static AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
 
     // the line from which audio data is captured
-    TargetDataLine line;
+    static TargetDataLine line;
 
     /**
      * Defines an audio format
      */
-    AudioFormat getAudioFormat() {
+    static AudioFormat getAudioFormat() {
         float sampleRate = 24000;
         int sampleSizeInBits = 16;
         int channels = 1;
@@ -37,7 +39,7 @@ public class JavaSoundRecorder {
     /**
      * Captures the sound and record into a WAV file
      */
-    void start() {
+    static void start() {
         try {
             AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
@@ -58,7 +60,7 @@ public class JavaSoundRecorder {
             System.out.println("Start recording...");
 
             // start recording
-            AudioSystem.write(ais, fileType, wavFile);
+            AudioSystem.write(ais, fileType, getFileName());
 
         } catch (LineUnavailableException ex) {
             ex.printStackTrace();
@@ -70,7 +72,7 @@ public class JavaSoundRecorder {
     /**
      * Closes the target data line to finish capturing and recording
      */
-    void finish() {
+    static void finish() {
         line.stop();
         line.close();
         System.out.println("Finished");
@@ -79,9 +81,7 @@ public class JavaSoundRecorder {
     /**
      * Entry to run the program
      */
-    public static void main(String[] args) {
-        final JavaSoundRecorder recorder = new JavaSoundRecorder();
-
+    public static void recordAudio() {
         // creates a new thread that waits for a specified
         // of time before stopping
         Thread stopper = new Thread(new Runnable() {
@@ -91,13 +91,11 @@ public class JavaSoundRecorder {
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
-                recorder.finish();
+                finish();
             }
         });
-
         stopper.start();
-
         // start recording
-        recorder.start();
+        start();
     }
 }
