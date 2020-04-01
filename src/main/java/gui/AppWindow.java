@@ -1,7 +1,9 @@
 package gui;
 
-import gui.mainmenu.MainPanel;
-import gui.webcam.MyWebcamPanel;
+import gui.interfaces.IButtonListener;
+import gui.panels.AudioPanel;
+import gui.panels.TextPanel;
+import gui.panels.CameraPanel;
 import util.WebcamUtil;
 
 import javax.swing.*;
@@ -9,9 +11,11 @@ import java.awt.*;
 
 public class AppWindow extends JFrame {
 
-    MyWebcamPanel myWebcamPanel;
-    MainPanel mainPanel = new MainPanel();
+    CameraPanel cameraPanel;
+    AudioPanel audioPanel = new AudioPanel();
+    TextPanel textPanel = new TextPanel();
     AppToolbar mainMenuToolBar = new AppToolbar();
+    Component focusPanel;
 
     public AppWindow() {
         super("RetroTalker");
@@ -22,33 +26,49 @@ public class AppWindow extends JFrame {
         add(mainMenuToolBar, BorderLayout.NORTH);
         mainMenuToolBar.setButtonListener(getButtonListener());
 
-        add(mainPanel, BorderLayout.CENTER);
+        setFocusPanel(textPanel);
+        add(focusPanel, BorderLayout.CENTER);
         pack();
     }
 
+    public void setFocusPanel(Component panel){
+        focusPanel = panel;
+    }
 
-    private void initWebcamPanel(){
-        myWebcamPanel = new MyWebcamPanel();
-        myWebcamPanel.setButtonListener(getButtonListener());
+
+    private void initCameraPanel(){
+        cameraPanel = new CameraPanel();
     }
 
     public IButtonListener getButtonListener() {
         return button -> {
             if (button == mainMenuToolBar.cameraButton) {
-                remove(mainPanel);
-                mainMenuToolBar.cameraButton.setVisible(false);
-                repaint();
-                initWebcamPanel();
-                add(myWebcamPanel, BorderLayout.CENTER);
-            } else if (button == myWebcamPanel.getCameraButton()) {
-                WebcamUtil.takePhoto();
-                remove(myWebcamPanel);
-                repaint();
-                mainMenuToolBar.cameraButton.setVisible(true);
-                add(mainPanel, BorderLayout.CENTER);
+                updatePanel(focusPanel, cameraPanel);
+            } else if (button == mainMenuToolBar.textButton) {
+                updatePanel(focusPanel, textPanel);
+            } else if (button == mainMenuToolBar.audioButton){
+                updatePanel(focusPanel, audioPanel);
             }
-            revalidate();
-            pack();
         };
+    }
+
+    public void updatePanel(Component currentPanel, Component newPanel){
+        if(currentPanel == newPanel){
+            return;
+        }
+        remove(currentPanel);
+        repaint();
+        if(newPanel == cameraPanel){
+            initCameraPanel();
+            newPanel = cameraPanel;
+        } else {
+            if(cameraPanel != null && cameraPanel.getWebcam().open()){
+                WebcamUtil.closeWebcam();
+            }
+        }
+        setFocusPanel(newPanel);
+        add(focusPanel, BorderLayout.CENTER);
+        revalidate();
+        pack();
     }
 }

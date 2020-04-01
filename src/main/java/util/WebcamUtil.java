@@ -15,11 +15,14 @@ public class WebcamUtil {
         return webcam;
     }
 
+    public static void closeWebcam(){
+        webcam.close();
+    }
+
     public static void takePhoto() {
         long timestamp = System.nanoTime();
         try {
             ImageIO.write(webcam.getImage(), "JPG", new File("src/main/resources/images/photo" + timestamp + ".jpg"));
-            webcam.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

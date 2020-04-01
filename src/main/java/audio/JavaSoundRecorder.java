@@ -9,7 +9,7 @@ import java.io.*;
  */
 public class JavaSoundRecorder {
     // record duration, in milliseconds
-    static final long RECORD_TIME = 2;  // 1 minute
+    static final long RECORD_TIME = 3000;  // 1 minute
 
     // path of the wav file
     File wavFile = new File("src/main/resources/audio/RecordAudio.wav");
