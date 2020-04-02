@@ -14,7 +14,7 @@ public class AppWindow extends JFrame {
     CameraPanel cameraPanel;
     AudioPanel audioPanel = new AudioPanel();
     TextPanel textPanel = new TextPanel();
-    AppToolbar mainMenuToolBar = new AppToolbar();
+    AppToolbar appToolbar = new AppToolbar();
     Component focusPanel;
 
     public AppWindow() {
@@ -23,8 +23,9 @@ public class AppWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLayout(new BorderLayout());
-        add(mainMenuToolBar, BorderLayout.NORTH);
-        mainMenuToolBar.setButtonListener(getButtonListener());
+        add(appToolbar, BorderLayout.NORTH);
+        appToolbar.setButtonListener(getButtonListener());
+        audioPanel.setButtonListener(getButtonListener());
 
         setFocusPanel(textPanel);
         add(focusPanel, BorderLayout.CENTER);
@@ -42,12 +43,16 @@ public class AppWindow extends JFrame {
 
     public IButtonListener getButtonListener() {
         return button -> {
-            if (button == mainMenuToolBar.cameraButton) {
+            if (button == appToolbar.cameraButton) {
                 updatePanel(focusPanel, cameraPanel);
-            } else if (button == mainMenuToolBar.textButton) {
+            } else if (button == appToolbar.textButton) {
                 updatePanel(focusPanel, textPanel);
-            } else if (button == mainMenuToolBar.audioButton){
+            } else if (button == appToolbar.audioButton){
                 updatePanel(focusPanel, audioPanel);
+            } else if (button == audioPanel.recordButton || button == audioPanel.deleteButton){
+                repaint();
+                revalidate();
+                pack();
             }
         };
     }
