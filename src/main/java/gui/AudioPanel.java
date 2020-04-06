@@ -1,10 +1,8 @@
-package gui.panels;
+package gui;
 
-import gui.interfaces.IButtonListener;
+import gui.interfaces.IActionListener;
 import util.PlayAudioUtil;
 import util.RecordAudioUtil;
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -16,15 +14,14 @@ public class AudioPanel extends JPanel {
 
     JList jList;
     File audioFolder = new File(AUDIO_LOCATION);
-    File[] audioFiles = audioFolder.listFiles();
 
     JToolBar audioToolbar = new JToolBar();
 
-    public JButton recordButton = new JButton("RECORD");
+    JButton recordButton = new JButton("RECORD");
     JButton playButton = new JButton("PLAY");
-    public JButton deleteButton = new JButton("DELETE");
+    JButton deleteButton = new JButton("DELETE");
 
-    IButtonListener iButtonListener;
+    IActionListener iActionListener;
 
     public AudioPanel() {
         super();
@@ -48,27 +45,8 @@ public class AudioPanel extends JPanel {
 
     private void initAudioList(){
         if (!audioFolder.exists()) audioFolder.mkdir();
-        jList = new JList(getAudioFileNames(audioFiles));
+        jList = new JList(getAudioFileNames(audioFolder.listFiles()));
         jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    }
-
-    private ActionListener deleteButtonAction() {
-        return actionEvent -> {
-            if (jList.getSelectedValue() != null) {
-                File selectedFile = new File(AUDIO_LOCATION + jList.getSelectedValue().toString());
-                selectedFile.delete();
-                refreshPanel();
-                iButtonListener.buttonAction(deleteButton);
-            }
-        };
-    }
-
-    ActionListener recordButtonAction() {
-        return actionEvent -> {
-            RecordAudioUtil.recordAudio();
-            refreshPanel();
-            iButtonListener.buttonAction(recordButton);
-        };
     }
 
     public String[] getAudioFileNames(File[] files) {
@@ -78,6 +56,23 @@ public class AudioPanel extends JPanel {
             fileNames[i] = files[i].getName();
         }
         return fileNames;
+    }
+
+    private ActionListener deleteButtonAction() {
+        return actionEvent -> {
+            if (jList.getSelectedValue() != null) {
+                File selectedFile = new File(AUDIO_LOCATION + jList.getSelectedValue().toString());
+                selectedFile.delete();
+                refreshPanel();
+            }
+        };
+    }
+
+    ActionListener recordButtonAction() {
+        return actionEvent -> {
+            RecordAudioUtil.recordAudio();
+            refreshPanel();
+        };
     }
 
     ActionListener playButtonAction() {
@@ -90,17 +85,13 @@ public class AudioPanel extends JPanel {
 
     void refreshPanel() {
         remove(jList);
-        audioFiles = audioFolder.listFiles();
-        jList = new JList(getAudioFileNames(audioFiles));
+        jList = new JList(getAudioFileNames(audioFolder.listFiles()));
         add(jList, BorderLayout.WEST);
-        audioToolbar.repaint();
-        audioToolbar.revalidate();
-        repaint();
-        revalidate();
+        iActionListener.action("refresh");
     }
 
-    public void setButtonListener(IButtonListener iButtonListener) {
-        this.iButtonListener = iButtonListener;
+    public void setActionListener(IActionListener iActionListener) {
+        this.iActionListener = iActionListener;
     }
 
 }

@@ -1,15 +1,15 @@
 package gui;
 
-import gui.interfaces.IButtonListener;
-import gui.panels.AudioPanel;
-import gui.panels.TextPanel;
-import gui.panels.CameraPanel;
+import gui.interfaces.IActionListener;
 import util.WebcamUtil;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class AppWindow extends JFrame {
+public class AppMainFrame extends JFrame {
+
+    public static final int PREF_V = 600;
+    public static final int PREF_H = 800;
 
     CameraPanel cameraPanel;
     AudioPanel audioPanel = new AudioPanel();
@@ -17,15 +17,17 @@ public class AppWindow extends JFrame {
     AppToolbar appToolbar = new AppToolbar();
     Component focusPanel;
 
-    public AppWindow() {
+    public AppMainFrame() {
         super("RetroTalker");
         setResizable(false);
+        setPreferredSize(new Dimension(PREF_H, PREF_V));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLayout(new BorderLayout());
         add(appToolbar, BorderLayout.NORTH);
-        appToolbar.setButtonListener(getButtonListener());
-        audioPanel.setButtonListener(getButtonListener());
+        appToolbar.setActionListener(getActionListener());
+        audioPanel.setActionListener(getActionListener());
+        textPanel.setActionListener(getActionListener());
 
         setFocusPanel(textPanel);
         add(focusPanel, BorderLayout.CENTER);
@@ -39,17 +41,18 @@ public class AppWindow extends JFrame {
 
     private void initCameraPanel(){
         cameraPanel = new CameraPanel();
+        cameraPanel.setActionListener(getActionListener());
     }
 
-    public IButtonListener getButtonListener() {
-        return button -> {
-            if (button == appToolbar.cameraButton) {
+    public IActionListener getActionListener() {
+        return actionSource -> {
+            if (actionSource == appToolbar.cameraButton) {
                 updatePanel(focusPanel, cameraPanel);
-            } else if (button == appToolbar.textButton) {
+            } else if (actionSource == appToolbar.textButton) {
                 updatePanel(focusPanel, textPanel);
-            } else if (button == appToolbar.audioButton){
+            } else if (actionSource == appToolbar.audioButton){
                 updatePanel(focusPanel, audioPanel);
-            } else if (button == audioPanel.recordButton || button == audioPanel.deleteButton){
+            } else if (actionSource == "refresh"){
                 repaint();
                 revalidate();
                 pack();
@@ -67,7 +70,7 @@ public class AppWindow extends JFrame {
             initCameraPanel();
             newPanel = cameraPanel;
         } else {
-            if(cameraPanel != null && cameraPanel.getWebcam().isOpen()){
+            if(cameraPanel != null && cameraPanel.webcamPanel != null && cameraPanel.webcamPanel.getWebcam().isOpen()){
                 WebcamUtil.closeWebcam();
             }
         }

@@ -1,6 +1,6 @@
 package gui;
 
-import gui.interfaces.IButtonListener;
+import gui.interfaces.IActionListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,7 @@ public class AppToolbar extends JToolBar implements ActionListener {
     JButton cameraButton;
     JButton audioButton;
     JButton textButton;
-    IButtonListener iButtonListener;
+    IActionListener iActionListener;
 
     public AppToolbar(){
         super();
@@ -29,12 +29,12 @@ public class AppToolbar extends JToolBar implements ActionListener {
         add(textButton);
     }
 
-    public void setButtonListener(IButtonListener iButtonListener){
-        this.iButtonListener = iButtonListener;
+    public void setActionListener(IActionListener iActionListener){
+        this.iActionListener = iActionListener;
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        iButtonListener.buttonAction(actionEvent.getSource());
+        iActionListener.action(actionEvent.getSource());
     }
 }

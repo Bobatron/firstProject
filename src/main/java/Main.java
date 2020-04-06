@@ -1,4 +1,4 @@
-import gui.AppWindow;
+import gui.AppMainFrame;
 import javax.swing.*;
 
 public class Main {
@@ -6,7 +6,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-               new AppWindow();
+               new AppMainFrame();
             }
         });
     }

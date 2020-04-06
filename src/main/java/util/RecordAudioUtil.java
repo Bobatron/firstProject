@@ -4,7 +4,7 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-import static gui.panels.AudioPanel.AUDIO_LOCATION;
+import static gui.AudioPanel.AUDIO_LOCATION;
 
 public class RecordAudioUtil {
     // record duration, in milliseconds
